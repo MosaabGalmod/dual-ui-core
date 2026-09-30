@@ -6,5 +6,7 @@
 - Dynamic font stacks: Cairo for Arabic, Inter for English, JetBrains Mono for monospace.
 - Punctuation compliance: `،` `؛` `؟` and `« »` in Arabic; Western digits `0-9` for technical numbers; `<bdi>` for Latin acronyms.
 - Dual theme tokens: CSS custom properties for Dark and Light modes with WCAG AA compliance.
+- Multi-screen responsiveness: Mobile-first styling (sm: 640px, md: 768px, lg: 1024px, xl: 1280px), 44x44px touch targets on mobile, fluid typography (`clamp()`), and zero horizontal scroll.
+- BiDi mobile navigation: Slide-out drawer sliding from `inset-inline-start` (right in RTL, left in LTR).
 - Tactile controls: accessible Language Toggle and Theme Toggle buttons.
 - Anti-FOUC script in head to eliminate visual jumps on page load.

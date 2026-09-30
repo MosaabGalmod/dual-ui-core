@@ -1,4 +1,4 @@
-# Windsurf Rules: Dual-UI Core (Bilingual AR/EN & Dual-Theme)
+# Windsurf Rules: Dual-UI Core (Bilingual AR/EN, Dual-Theme & Responsive)
 
 1. BILINGUAL ISOLATION:
 - All copy stored in dedicated `ar` and `en` translation dictionaries.
@@ -6,10 +6,13 @@
 - Wrap technical Latin acronyms in `<bdi>` inside Arabic paragraphs.
 - Arabic punctuation: `،` `؛` `؟` and `« »`.
 
-2. LOGICAL LAYOUT:
+2. LOGICAL LAYOUT & RESPONSIVENESS:
 - Root updates: `<html lang="ar" dir="rtl">` vs `<html lang="en" dir="ltr">`.
 - CSS Logical Properties only: `margin-inline-start`, `padding-inline-end`, `text-align: start`.
 - Cairo for Arabic, Inter for English, JetBrains Mono for code.
+- Mobile-first breakpoints: sm (640px), md (768px), lg (1024px), xl (1280px).
+- Mobile navigation drawer slides from logical start (right in RTL, left in LTR).
+- Minimum 44x44px touch targets on mobile. Zero horizontal page scroll.
 
 3. DUAL-THEME:
 - CSS variables for Dark and Light modes. No hardcoded colors.

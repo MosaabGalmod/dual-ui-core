@@ -1,38 +1,38 @@
-# Dual-UI Core: Universal Bilingual (AR/EN) & Dual-Theme (Dark/Light) Skill
+# Dual-UI Core: Universal Bilingual (AR/EN), Dual-Theme & Responsive Skill
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Universal Agents](https://img.shields.io/badge/Universal%20Agents-Antigravity%20%7C%20Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline%20%7C%20Copilot-success.svg)](#installation)
 
-> **Strict zero-leakage bilingual architecture (Arabic RTL / English LTR) with native dual-theme support (Dark & Light modes) for autonomous coding agents.**
+> **Strict zero-leakage bilingual architecture (Arabic RTL / English LTR), native dual-theme support (Dark & Light modes), and robust multi-screen responsiveness (Mobile-First) for autonomous coding agents.**
 >
-> **مهارة ومعيار هندسي شامل لإنتاج واجهات ويب ثنائية اللغة (عربي RTL وإنجليزي LTR) مع عزل تام يمنع تسرب أي لغة للأخرى، ودعم أصيل للنمطين الداكن والفاتح مع أزرار التحكم وحفظ التفضيلات.**
+> **مهارة ومعيار هندسي شامل لإنتاج واجهات ويب ثنائية اللغة (عربي RTL وإنجليزي LTR) مع عزل تام يمنع تسرب أي لغة للأخرى، ودعم أصيل للنمطين الداكن والفاتح، واستجابة تامة لكافة مقاسات الشاشات (الهواتف، الأجهزة اللوحية، والشاشات العريضة) مع أزرار التحكم وحفظ التفضيلات.**
 
 ---
 
-## Core Pillars (الركائز الأساسية للمهارة)
+## The Three Core Pillars (الركائز الهندسية الثلاث)
 
-1. **Zero Text Leakage (العزل التام لمنع تسرب النصوص)**:
-   - Dictionaries are strictly separated (`locales/ar.json` and `locales/en.json`).
-   - Zero hardcoded strings in templates or components.
-   - The Arabic view contains **zero** English words or buttons (except technical acronyms wrapped in `<bdi>`).
-   - The English view contains **zero** Arabic words or remnant characters.
-   - Punctuation rules: Arabic punctuation `،` `؛` `؟` `« »` in Arabic, Western punctuation `,` `;` `?` `""` in English.
-   - Western digits `0-9` for technical metrics and version tags across both languages.
+### 1. Zero Text Leakage (العزل اللغوي التام)
+- Dictionaries are strictly separated (`locales/ar.json` and `locales/en.json`).
+- Zero hardcoded strings in templates or components.
+- The Arabic view contains **zero** English words or buttons (except technical acronyms wrapped in `<bdi>`).
+- The English view contains **zero** Arabic words or remnant characters.
+- Punctuation rules: Arabic punctuation `،` `؛` `؟` `« »` in Arabic, Western punctuation `,` `;` `?` `""` in English.
+- Western digits `0-9` for technical metrics and version tags across both languages.
+- CSS Logical Properties: `margin-inline-start`, `padding-inline-end`, and `text-align: start`.
 
-2. **CSS Logical Properties (الهندسة المنطقية للاتجاه)**:
-   - Strict use of `margin-inline-start`, `padding-inline-end`, and `text-align: start`.
-   - Never use physical `left` or `right` for structural layout.
+### 2. First-Class Dual-Theme (النمطان الداكن والفاتح)
+- Calibrated semantic design tokens via CSS variables.
+- WCAG AA compliance (minimum 4.5:1 text contrast).
+- Soft, ergonomic zinc/slate steps (no blinding white or pitch black clashing).
+- Anti-FOUC script in `<head>` to eliminate visual flash of wrong language or theme upon load.
 
-3. **First-Class Dual-Theme (Dark & Light Modes)**:
-   - Calibrated semantic design tokens via CSS variables.
-   - WCAG AA compliance (minimum 4.5:1 text contrast).
-   - No blinding pure white or pitch black clashing; soft ergonomic zinc/slate steps.
-
-4. **Interactive Controls & Anti-FOUC (التحكم السلس وانعدام الوميض)**:
-   - Interactive Language Toggle button (instant switch without page reload).
-   - Interactive Theme Toggle button (dynamic Sun/Moon with 140ms ease-out transition).
-   - Anti-FOUC script in `<head>` to eliminate visual flash of wrong language or theme upon load.
-   - State persistence in `localStorage`.
+### 3. Multi-Screen Responsiveness (التجاوب الكامل مع كافة الشاشات)
+- **Mobile-First Foundation**: Base styles for small screens (`320px–639px`) first, then progressively layered via standard breakpoints (`sm: 640px`, `md: 768px`, `lg: 1024px`, `xl: 1280px`).
+- **Touch-Ergonomic Targets**: Minimum 44x44px clickable target on mobile for all buttons, links, and icon toggles (WCAG 2.5.5 / Apple HIG).
+- **BiDi Adaptive Navigation Drawer**: On screens `< 768px`, desktop navigation collapses into a slide-out drawer that slides in from `inset-inline-start` (from the right in Arabic RTL, from the left in English LTR).
+- **Fluid Typography**: Uses `clamp()` for headline typography to prevent awkward line breaks on narrow phone screens.
+- **Zero Horizontal Overflow**: Prohibits horizontal window scroll (`overflow-x: clip`), with responsive horizontal scroll wrappers for data tables and matrices.
+- **Safe Area Insets**: Accommodates mobile notches and gesture navigation swipe bars using `env(safe-area-inset-*)`.
 
 ---
 
@@ -46,7 +46,7 @@ dual-ui-core/
 ├── install.ps1               # 1-Click universal installer for Windows (PowerShell)
 ├── install.sh                # 1-Click universal installer for macOS / Linux (Bash)
 ├── templates/
-│   └── index.html            # Complete working zero-dependency demonstration
+│   └── index.html            # Complete working zero-dependency demonstration (Responsive + BiDi + Themes)
 ├── adapters/
 │   ├── .cursorrules          # Turnkey adapter for Cursor IDE
 │   ├── .windsurfrules        # Turnkey adapter for Windsurf / Cascade
@@ -115,7 +115,9 @@ Copy the appropriate adapter from the `adapters/` folder into your project root.
 - [ ] 7. Does the page render with zero theme/language flicker (Anti-FOUC script present)?
 - [ ] 8. Does the Theme Toggle switch cleanly between Dark and Light mode without layout shift?
 - [ ] 9. Do both Dark and Light themes pass WCAG AA contrast (≥ 4.5:1 for body text)?
-- [ ] 10. Are user choices for language and theme persisted in `localStorage` across reloads?
+- [ ] 10. Is the layout 100% responsive across mobile (`320px+`), tablet, and desktop viewports?
+- [ ] 11. Do all touch targets on mobile meet the minimum 44x44px ergonomic threshold?
+- [ ] 12. Does the mobile navigation drawer slide in from the correct logical direction (RTL vs LTR)?
 
 ---
 

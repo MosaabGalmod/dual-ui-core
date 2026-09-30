@@ -1,6 +1,6 @@
-# AGENTS.md: Universal Agent Standard for Bilingual (AR/EN) & Dual-Theme (Dark/Light) UI
+# AGENTS.md: Universal Agent Standard for Bilingual (AR/EN), Dual-Theme & Responsive UI
 
-> This document defines the engineering protocol for any AI coding agent building or modifying web applications with bilingual Arabic/English and Dark/Light mode capabilities.
+> This document defines the engineering protocol for any AI coding agent building or modifying web applications with bilingual Arabic/English, Dark/Light mode, and multi-screen responsive capabilities.
 
 ## System Directives for Agents
 
@@ -35,7 +35,17 @@ When implementing, refactoring, or generating web pages and UI components, you m
 
 ---
 
-### 3. State Management & Toggle Controls
+### 3. Multi-Screen Responsive Architecture (Mobile-First)
+- **Mobile-First Layout**: Design base styles for small screens (`320px–639px`) first, then progressively enhance using standard breakpoints (`sm: 640px`, `md: 768px`, `lg: 1024px`, `xl: 1280px`).
+- **Touch-Ergonomic Targets**: Ensure a minimum 44x44px tappable target on mobile for all buttons, toggles, and navigation links.
+- **BiDi Responsive Navigation**: Collapse desktop navigation into an accessible mobile drawer on screens `< 768px`. The drawer must slide in from `inset-inline-start` (from the right in Arabic RTL, from the left in English LTR).
+- **Fluid Typography**: Use `clamp()` for headline typography (e.g. `clamp(1.75rem, 4vw, 2.75rem)`) to prevent awkward line breaks on mobile.
+- **Zero Horizontal Overflow**: Enforce `overflow-x: clip` or `hidden` on the document root, and wrap tables and wide data blocks in horizontal scroll containers.
+- **Safe Area Insets**: Support device notches and home indicator swipe bars using `env(safe-area-inset-*)`.
+
+---
+
+### 4. State Management & Toggle Controls
 - **Language Toggle**: Accessible button showing current and target language, instant DOM text hydration via `data-i18n` without full-page reloads, persisted in `localStorage`.
 - **Theme Toggle**: Accessible button with clear Sun/Moon iconography, smooth 120-160ms transition, persisted in `localStorage` and synchronized with `prefers-color-scheme`.
 - **Anti-FOUC Head Script**: Include an inline script in `<head>` to read `localStorage` and set `dir`, `lang`, and theme attributes before visual paint.

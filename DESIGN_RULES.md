@@ -1,8 +1,8 @@
-# Dual-UI Core: Production Design Rules (Bilingual AR/EN & Dual Theme)
+# Dual-UI Core: Production Design Rules (Bilingual, Dual-Theme & Responsive)
 
 > Drop this file into your repository root as `DESIGN_RULES.md`, or paste it into `CLAUDE.md`, `GEMINI.md`, or `.cursorrules`.
 
-You are building a production web interface. The following rules are non-negotiable architectural constraints for bilingual (Arabic RTL & English LTR) interfaces supporting both Dark and Light themes:
+You are building a production web interface. The following rules are non-negotiable architectural constraints for bilingual (Arabic RTL & English LTR) interfaces supporting both Dark and Light themes across all screen sizes:
 
 ---
 
@@ -33,7 +33,17 @@ You are building a production web interface. The following rules are non-negotia
 
 ---
 
-### 3. State Management & Controls
+### 3. Multi-Screen Responsive Architecture (Mobile-First)
+- **Mobile-First Breakpoints**: Base styles for small screens (`320px–639px`) first, then layer enhancements at `sm: 640px`, `md: 768px`, `lg: 1024px`, `xl: 1280px`.
+- **Ergonomic Touch Targets**: Minimum 44x44px tappable target on mobile for all buttons, links, and toggles.
+- **BiDi Mobile Drawer Navigation**: Collapse navigation links on `< 768px` into an accessible drawer that slides in from `inset-inline-start` (right in Arabic, left in English).
+- **Fluid Typography**: Use `clamp()` for headline typography to prevent awkward line breaks on mobile screens.
+- **Zero Horizontal Overflow**: Prevent horizontal page wobble (`overflow-x: clip`), and wrap wide tables in responsive scroll containers.
+- **Safe Area Insets**: Accommodate device notches and bottom bars using `env(safe-area-inset-*)`.
+
+---
+
+### 4. State Management & Controls
 - **Language Toggle**: Accessible button showing current and target language, instant DOM text hydration without full-page reloads, persisted in `localStorage`.
 - **Theme Toggle**: Accessible button with clear Sun/Moon iconography, smooth 120-160ms transition, persisted in `localStorage` and synchronized with `prefers-color-scheme`.
 - **Anti-FOUC Head Script**: Include an inline script in `<head>` to read `localStorage` and set `dir`, `lang`, and theme attributes before visual paint.

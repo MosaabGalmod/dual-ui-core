@@ -1,15 +1,16 @@
 ---
 name: dual-ui-core
-description: Strict engineering standard for zero-leakage bilingual interfaces (Arabic RTL & English LTR) with complete dual-theme support (Dark & Light modes). Enforces isolated dictionaries, CSS logical properties, anti-FOUC state hydration, WCAG AA contrast, and tactile toggle controls. Trigger whenever building, styling, or translating any web page, interface, or component with Arabic/English or dark/light requirements.
+description: Strict engineering standard for zero-leakage bilingual interfaces (Arabic RTL & English LTR), complete dual-theme support (Dark & Light modes), and robust multi-screen responsiveness (mobile-first, touch-ergonomic, fluid scaling). Trigger whenever building, styling, or reviewing any responsive web interface, page, or UI component.
 ---
 
-# Dual-UI Core: Bilingual (AR/EN) & Dual-Theme (Dark/Light) Engineering Standard
+# Dual-UI Core: Bilingual (AR/EN), Dual-Theme (Dark/Light) & Responsive Engineering Standard
 
-You are an expert production frontend engineer. This standard defines non-negotiable architectural constraints for web interfaces supporting **Bilingual Localization (Arabic RTL / English LTR)** and **Dual Theme (Dark / Light)**.
+You are an expert production frontend engineer. This standard defines non-negotiable architectural constraints for web interfaces supporting **Bilingual Localization (Arabic RTL / English LTR)**, **Dual Theme (Dark / Light)**, and **Multi-Screen Responsiveness (Mobile-First)**.
 
-When implementing or modifying any user interface, you must satisfy two fundamental pillars:
+When implementing or modifying any user interface, you must satisfy three fundamental pillars:
 1. **Zero Text Leakage**: Arabic and English must be completely isolated. Neither language may leak into the other's view, markup, or layout.
 2. **First-Class Dual Theme**: Both Dark and Light themes must be first-class citizens built on semantic CSS tokens with WCAG AA compliance, zero visual flicker (FOUC), and tactile toggle controls.
+3. **Multi-Screen Responsiveness**: Mobile-first architecture, fluid scaling, ergonomic touch targets (≥44px), bidirectional-aware navigation drawers, and zero horizontal overflow.
 
 ---
 
@@ -110,9 +111,61 @@ Define design tokens at the root level using CSS variables. Never hardcode arbit
 
 ---
 
-## 3. Interactive Toggle Controls & Anti-FOUC State
+## 3. Multi-Screen Responsive Architecture (Mobile-First)
 
-### 3.1 Anti-FOUC Hydration Script (Zero Visual Glitch)
+### 3.1 Mobile-First Viewport & Breakpoint Standard
+Always define standard viewport constraints:
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+```
+Build base styles for mobile viewports (`320px–639px`) first, then layer desktop layout via standard min-width breakpoints:
+- `sm`: `640px` (large phones / small phablets)
+- `md`: `768px` (tablets / iPad portrait)
+- `lg`: `1024px` (laptops / tablet landscape)
+- `xl`: `1280px` (desktop monitors)
+
+### 3.2 Fluid Typography & 4px Spatial Grid
+- Use CSS `clamp()` or stepped responsive utility classes for headlines:
+  - Hero headline: `clamp(1.75rem, 5vw, 3rem)` (28–34px mobile, 44–52px desktop).
+  - Body text: 15–16px across all screens.
+- **Strict 4px Spatial Scale**: Maintain multiples of 4px (`4, 8, 12, 16, 24, 32, 48, 64px`) across margins and padding.
+
+### 3.3 Touch-Ergonomic Targets
+- On mobile devices, all interactive elements (buttons, links, icon toggles, form fields) must provide a minimum tappable area of **44x44px** (per WCAG 2.5.5 and Apple HIG).
+
+### 3.4 Bidirectional-Aware Mobile Navigation (Drawer / Sheet)
+- On screens `< 768px`, desktop navigation collapses into an accessible mobile hamburger trigger.
+- **BiDi Sliding Rule**:
+  - In Arabic (`dir="rtl"`): The mobile drawer slides in from the **right** (`inset-inline-start: 0`).
+  - In English (`dir="ltr"`): The mobile drawer slides in from the **left** (`inset-inline-start: 0`).
+- The drawer includes the Language and Theme controls for immediate, easy thumb access.
+- Tapping outside the drawer or pressing `Escape` closes the drawer.
+
+### 3.5 Zero Horizontal Overflow (`No Scroll Trap`)
+- Document root and body must enforce `overflow-x: clip` or `overflow-x: hidden` to prevent horizontal wobble.
+- Data tables, matrices, and code blocks must be wrapped in a scroll container:
+  ```css
+  .table-scroll-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  ```
+
+### 3.6 Safe Area Insets (Mobile Notches & Gesture Bars)
+- Respect device notches and bottom swipe bars:
+  ```css
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-inline-start: env(safe-area-inset-left);
+  padding-inline-end: env(safe-area-inset-right);
+  ```
+
+---
+
+## 4. Interactive Toggle Controls & Anti-FOUC State
+
+### 4.1 Anti-FOUC Hydration Script (Zero Visual Glitch)
 To eliminate Flash of Unstyled Content (FOUC) or Flash of Wrong Language upon page refresh, insert this tiny, synchronous script into the document `<head>` **before** any stylesheet or body tag:
 
 ```html
@@ -137,15 +190,11 @@ To eliminate Flash of Unstyled Content (FOUC) or Flash of Wrong Language upon pa
 </script>
 ```
 
-### 3.2 Accessible Language Toggle Button
-- **Placement**: Top navigation bar / header action group.
-- **State Feedback**: Displays current language with an unambiguous indicator of the target toggle (e.g. `English` button when in Arabic mode, `العربية` button when in English mode).
-- **Smooth Transition**: Updates all `[data-i18n]` text attributes instantly in memory without full-page reloading.
-- **Markup Blueprint**:
+### 4.2 Accessible Language Toggle Button
 ```html
 <button id="langToggleBtn" 
         onclick="toggleLanguage()"
-        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors text-xs font-semibold"
+        class="inline-flex items-center gap-2 px-3 py-1.5 min-h-[44px] sm:min-h-[36px] rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors text-xs font-semibold"
         aria-label="Switch Language / تبديل اللغة">
   <svg class="w-4 h-4 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.5 0 4.5-4 4.5-9s-2-9-4.5-9m0 18c-2.5 0-4.5-4-4.5-9s2-9 4.5-9m-9 9h18"/>
@@ -154,22 +203,16 @@ To eliminate Flash of Unstyled Content (FOUC) or Flash of Wrong Language upon pa
 </button>
 ```
 
-### 3.3 Accessible Theme Toggle Button
-- **Placement**: Adjacent to the language toggle.
-- **Visual Feedback**: Displays dynamic sun (☀️) in Dark mode (to switch to Light) and moon (🌙) in Light mode (to switch to Dark).
-- **Tactile Transition**: Smooth 120-160ms background and border color transition, zero layout shift.
-- **Markup Blueprint**:
+### 4.3 Accessible Theme Toggle Button
 ```html
 <button id="themeToggleBtn"
         onclick="toggleTheme()"
-        class="p-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors"
+        class="p-2 min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] flex items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors"
         aria-label="Toggle Dark/Light Mode"
         title="Toggle Theme">
-  <!-- Sun Icon (Active in Dark mode) -->
   <svg id="themeIconSun" class="w-4 h-4 hidden dark:block text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
   </svg>
-  <!-- Moon Icon (Active in Light mode) -->
   <svg id="themeIconMoon" class="w-4 h-4 block dark:hidden text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
   </svg>
@@ -178,7 +221,7 @@ To eliminate Flash of Unstyled Content (FOUC) or Flash of Wrong Language upon pa
 
 ---
 
-## 4. Pre-Delivery Quality Checklist (10 Verification Checks)
+## 5. Pre-Delivery Quality Checklist (12 Verification Checks)
 
 Before concluding any UI delivery or component refactoring, verify every item:
 
@@ -193,4 +236,6 @@ Before concluding any UI delivery or component refactoring, verify every item:
 | 7 | Does the page render with zero theme/language flicker (Anti-FOUC script present)? | YES |
 | 8 | Does the Theme Toggle switch cleanly between Dark and Light mode without layout shift? | YES |
 | 9 | Do both Dark and Light themes pass WCAG AA contrast (≥ 4.5:1 for body text)? | YES |
-| 10 | Are user choices for language and theme persisted in `localStorage` across reloads? | YES |
+| 10 | Is the layout 100% responsive across mobile (`320px+`), tablet, and desktop viewports? | YES |
+| 11 | Do all touch targets on mobile meet the minimum 44x44px ergonomic threshold? | YES |
+| 12 | Does the mobile navigation drawer slide in from the correct logical direction (RTL vs LTR)? | YES |

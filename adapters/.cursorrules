@@ -1,6 +1,6 @@
-# Cursor AI Rules: Dual-UI Core (Bilingual AR/EN & Dual-Theme)
+# Cursor AI Rules: Dual-UI Core (Bilingual AR/EN, Dual-Theme & Responsive)
 
-You are building a production bilingual (Arabic RTL / English LTR) interface with Dark & Light theme support. Enforce these constraints:
+You are building a production bilingual (Arabic RTL / English LTR) interface with Dark & Light theme support across all screen sizes. Enforce these constraints:
 
 1. ZERO TEXT LEAKAGE:
 - Never hardcode visible text directly in HTML/JSX/Vue components.
@@ -20,7 +20,13 @@ You are building a production bilingual (Arabic RTL / English LTR) interface wit
 - Light theme: Background `#ffffff`, Cards `#f4f4f5`, Borders `#e4e4e7`, Text `#09090b`.
 - Guarantee WCAG AA contrast (>= 4.5:1 for body copy).
 
-4. CONTROLS & STATE:
+4. MULTI-SCREEN RESPONSIVENESS:
+- Mobile-first approach: write base styles for small screens (<640px) first, enhance at sm (640px), md (768px), lg (1024px), xl (1280px).
+- Minimum 44x44px touch targets on mobile for all buttons, links, and toggles.
+- On screens < 768px, navigation collapses into a drawer sliding from `inset-inline-start` (right in Arabic RTL, left in English LTR).
+- Fluid typography using `clamp()`. Zero horizontal overflow (`overflow-x: clip`).
+
+5. CONTROLS & STATE:
 - Provide accessible Language Toggle and Theme Toggle buttons.
 - Provide inline head script to prevent Flash of Unstyled Content (FOUC).
 - Persist language in `localStorage.getItem('app_lang')` and theme in `localStorage.getItem('app_theme')`.
