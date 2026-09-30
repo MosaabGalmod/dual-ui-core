@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dual-UI Core Demonstration</title>
+  
+  <!-- Anti-FOUC Hydration Script (Runs before CSS & DOM rendering) -->
+  <script>
+    (function() {
+      var savedLang = localStorage.getItem('app_lang') || 
+                      (navigator.language && navigator.language.startsWith('ar') ? 'ar' : 'en');
+      document.documentElement.lang = savedLang;
+      document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+
+      var savedTheme = localStorage.getItem('app_theme') || 
+                       (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+
+  <!-- Typography: Cairo for Arabic + Inter for English + JetBrains Mono for Code -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* CSS Design Tokens */
+    :root {
+      /* Light Theme Tokens */
+      --bg-app: #ffffff;
+      --bg-surface: #f4f4f5;
+      --bg-surface-elevated: #ffffff;
+      --border-subtle: #e4e4e7;
+      --border-strong: #d4d4d8;
+      --text-primary: #09090b;
+      --text-secondary: #52525b;
+      --text-muted: #71717a;
+      --accent: #0284c7;
+      --accent-contrast: #ffffff;
+      --accent-subtle: #e0f2fe;
+      --radius: 8px;
+    }
+
+    [data-theme="dark"], .dark {
+      /* Dark Theme Tokens */
+      --bg-app: #09090b;
+      --bg-surface: #18181b;
+      --bg-surface-elevated: #27272a;
+      --border-subtle: #27272a;
+      --border-strong: #3f3f46;
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --accent: #38bdf8;
+      --accent-contrast: #09090b;
+      --accent-subtle: #082f49;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 140ms ease-out, color 140ms ease-out;
+    }
+
+    /* Dynamic Font Adaptation */
+    html[lang="ar"] body {
+      font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+    }
+    html[lang="en"] body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Header & Navigation */
+    header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+
+    .brand-badge {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background-color: var(--accent-subtle);
+      color: var(--accent);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .actions-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-subtle);
+      background-color: var(--bg-surface-elevated);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 140ms ease-out, border-color 140ms ease-out, color 140ms ease-out;
+    }
+
+    .btn:hover {
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: var(--accent-contrast);
+      border-color: var(--accent);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.08);
+      color: var(--accent-contrast);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      width: 100%;
+    }
+
+    .hero-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      max-width: 65ch;
+      margin-bottom: 2rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: border-color 140ms ease-out;
+    }
+
+    .card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .card h3 {
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .card p {
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    /* BiDi Logical Utilities */
+    .icon {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand">
+      <span data-i18n="brand_name">منظومة Dual-UI</span>
+      <span class="brand-badge mono" dir="ltr">v1.0.0</span>
+    </div>
+
+    <div class="actions-group">
+      <!-- Language Toggle Button -->
+      <button id="langToggleBtn" class="btn" onclick="toggleLanguage()" aria-label="Toggle Language / تبديل اللغة">
+        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.5 0 4.5-4 4.5-9s-2-9-4.5-9m0 18c-2.5 0-4.5-4-4.5-9s2-9 4.5-9m-9 9h18"/>
+        </svg>
+        <span id="langBtnLabel">English</span>
+      </button>
+
+      <!-- Theme Toggle Button -->
+      <button id="themeToggleBtn" class="btn" onclick="toggleTheme()" aria-label="Toggle Theme / تبديل النمط">
+        <svg id="themeIcon" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"></svg>
+        <span id="themeBtnLabel">النمط</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <h1 class="hero-title" data-i18n="hero_title">واجهات ثنائية اللغة ونظام ألوان متكامل</h1>
+    <p class="hero-description" data-i18n="hero_desc">
+      تصميم معماري يعزل النصوص العربية والإنجليزية بالكامل بدون تسرب، مع دعم أصيل للنمطين الداكن والفاتح، والالتزام بمعايير الوصولية <bdi dir="ltr">WCAG AA</bdi>.
+    </p>
+
+    <div>
+      <button class="btn btn-primary" data-i18n="cta_primary">بدء التجربة الفورية</button>
+      <button class="btn" data-i18n="cta_secondary">توثيق المعايير</button>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="card-grid">
+      <div class="card">
+        <h3 data-i18n="card1_title">عزل تام للمعاجم اللغوية</h3>
+        <p data-i18n="card1_desc">لا توجد أي كلمة إنجليزية داخل النسخة العربية، ولا كلمة عربية في النسخة الإنجليزية، مع عزل المصطلحات اللاتينية والتقنية داخل وسوم محددة.</p>
+      </div>
+
+      <div class="card">
+        <h3 data-i18n="card2_title">نمطان داكن وفاتح حقيقيان</h3>
+        <p data-i18n="card2_desc">تم بناء لوحة الألوان اعتماداً على درجات الرمادي الصلبة والتباين اللوني المريح للعين بدون وهج ضبابي أو ظلال زائدة عن الحاجة.</p>
+      </div>
+
+      <div class="card">
+        <h3 data-i18n="card3_title">انعدام الوميض والتأخير</h3>
+        <p data-i18n="card3_desc">يتم فحص وتطبيق حالة اللغة والنمط فوراً قبل رسم عناصر الصفحة، مما يضمن تجربة مستخدم سلسة واحترافية.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bilingual Catalog & State Logic -->
+  <script>
+    // 1. Isolated Translation Catalogs
+    const I18N_CATALOG = {
+      ar: {
+        brand_name: "منظومة Dual-UI",
+        lang_btn: "English",
+        theme_dark: "الداكن",
+        theme_light: "الفاتح",
+        hero_title: "واجهات ثنائية اللغة ونظام ألوان متكامل",
+        hero_desc: "تصميم معماري يعزل النصوص العربية والإنجليزية بالكامل بدون تسرب، مع دعم أصيل للنمطين الداكن والفاتح، والالتزام بمعايير الوصولية <bdi dir=\"ltr\">WCAG AA</bdi>.",
+        cta_primary: "بدء التجربة الفورية",
+        cta_secondary: "توثيق المعايير",
+        card1_title: "عزل تام للمعاجم اللغوية",
+        card1_desc: "لا توجد أي كلمة إنجليزية داخل النسخة العربية، ولا كلمة عربية في النسخة الإنجليزية، مع عزل المصطلحات اللاتينية والتقنية داخل وسوم محددة.",
+        card2_title: "نمطان داكن وفاتح حقيقيان",
+        card2_desc: "تم بناء لوحة الألوان اعتماداً على درجات الرمادي الصلبة والتباين اللوني المريح للعين بدون وهج ضبابي أو ظلال زائدة عن الحاجة.",
+        card3_title: "انعدام الوميض والتأخير",
+        card3_desc: "يتم فحص وتطبيق حالة اللغة والنمط فوراً قبل رسم عناصر الصفحة، مما يضمن تجربة مستخدم سلسة واحترافية."
+      },
+      en: {
+        brand_name: "Dual-UI Core",
+        lang_btn: "العربية",
+        theme_dark: "Dark",
+        theme_light: "Light",
+        hero_title: "Zero-Leakage Bilingual & Dual-Theme Architecture",
+        hero_desc: "Production-grade design standard strictly separating Arabic and English copy with native Dark and Light mode support, fully WCAG AA compliant.",
+        cta_primary: "Get Started Now",
+        cta_secondary: "View Standards",
+        card1_title: "Strict Dictionary Isolation",
+        card1_desc: "Zero English words appear in Arabic mode, and zero Arabic words appear in English mode, with technical tokens safely isolated via bdi tags.",
+        card2_title: "First-Class Dark & Light Modes",
+        card2_desc: "Color palettes built on calibrated neutral steps ensuring ergonomic reading contrast without decorative AI-slop glows or fake shadows.",
+        card3_title: "Zero-Flicker State Hydration",
+        card3_desc: "Language and theme preferences are evaluated and applied prior to DOM paint, completely eliminating visual jump and layout shifts."
+      }
+    };
+
+    // 2. Language Switching Engine
+    function applyLanguage(lang) {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+      localStorage.setItem('app_lang', lang);
+
+      const catalog = I18N_CATALOG[lang] || I18N_CATALOG.ar;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (catalog[key]) {
+          el.innerHTML = catalog[key];
+        }
+      });
+
+      document.getElementById('langBtnLabel').textContent = catalog.lang_btn;
+      updateThemeControls();
+    }
+
+    function toggleLanguage() {
+      const current = document.documentElement.lang || 'ar';
+      const target = (current === 'ar') ? 'en' : 'ar';
+      applyLanguage(target);
+    }
+
+    // 3. Theme Switching Engine
+    const SVG_SUN = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />';
+    const SVG_MOON = '<path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />';
+
+    function updateThemeControls() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const currentLang = document.documentElement.lang || 'ar';
+      const iconEl = document.getElementById('themeIcon');
+      const labelEl = document.getElementById('themeBtnLabel');
+      const catalog = I18N_CATALOG[currentLang] || I18N_CATALOG.ar;
+
+      if (currentTheme === 'dark') {
+        iconEl.innerHTML = SVG_SUN;
+        labelEl.textContent = (currentLang === 'ar') ? 'الفاتح' : 'Light';
+      } else {
+        iconEl.innerHTML = SVG_MOON;
+        labelEl.textContent = (currentLang === 'ar') ? 'الداكن' : 'Dark';
+      }
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem('app_theme', theme);
+      updateThemeControls();
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const target = (current === 'dark') ? 'light' : 'dark';
+      applyTheme(target);
+    }
+
+    // 4. Initial Mount
+    document.addEventListener('DOMContentLoaded', () => {
+      const initialLang = document.documentElement.lang || 'ar';
+      applyLanguage(initialLang);
+    });
+  </script>
+</body>
+</html>

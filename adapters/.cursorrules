@@ -1,0 +1,26 @@
+# Cursor AI Rules: Dual-UI Core (Bilingual AR/EN & Dual-Theme)
+
+You are building a production bilingual (Arabic RTL / English LTR) interface with Dark & Light theme support. Enforce these constraints:
+
+1. ZERO TEXT LEAKAGE:
+- Never hardcode visible text directly in HTML/JSX/Vue components.
+- Separate all strings into isolated `ar` and `en` dictionaries.
+- In Arabic: zero English words (except technical acronyms in `<bdi>`).
+- In English: zero Arabic words.
+- Arabic punctuation exclusively in Arabic text: `،` `؛` `؟` and `« »`.
+
+2. BIDIRECTIONAL LAYOUT:
+- Dynamically toggle root `<html lang="ar" dir="rtl">` vs `<html lang="en" dir="ltr">`.
+- Use CSS Logical Properties exclusively (`margin-inline-start`, `padding-inline-end`, `text-align: start`). Never use physical `left`/`right`.
+- Dynamically adapt font families: Cairo/Tajawal for Arabic, Inter for English.
+
+3. DUAL-THEME TOKENS:
+- Use CSS variables for all surfaces, text, and borders (`[data-theme="dark"]` and `:root`).
+- Dark theme: Background `#09090b`, Cards `#18181b`, Borders `#27272a`, Text `#fafafa`.
+- Light theme: Background `#ffffff`, Cards `#f4f4f5`, Borders `#e4e4e7`, Text `#09090b`.
+- Guarantee WCAG AA contrast (>= 4.5:1 for body copy).
+
+4. CONTROLS & STATE:
+- Provide accessible Language Toggle and Theme Toggle buttons.
+- Provide inline head script to prevent Flash of Unstyled Content (FOUC).
+- Persist language in `localStorage.getItem('app_lang')` and theme in `localStorage.getItem('app_theme')`.

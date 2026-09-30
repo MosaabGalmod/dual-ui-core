@@ -1,0 +1,22 @@
+# Windsurf Rules: Dual-UI Core (Bilingual AR/EN & Dual-Theme)
+
+1. BILINGUAL ISOLATION:
+- All copy stored in dedicated `ar` and `en` translation dictionaries.
+- Zero text leakage: no English text in Arabic view, no Arabic in English view.
+- Wrap technical Latin acronyms in `<bdi>` inside Arabic paragraphs.
+- Arabic punctuation: `،` `؛` `؟` and `« »`.
+
+2. LOGICAL LAYOUT:
+- Root updates: `<html lang="ar" dir="rtl">` vs `<html lang="en" dir="ltr">`.
+- CSS Logical Properties only: `margin-inline-start`, `padding-inline-end`, `text-align: start`.
+- Cairo for Arabic, Inter for English, JetBrains Mono for code.
+
+3. DUAL-THEME:
+- CSS variables for Dark and Light modes. No hardcoded colors.
+- Dark: `#09090b` bg, `#18181b` card, `#27272a` border, `#fafafa` text.
+- Light: `#ffffff` bg, `#f4f4f5` card, `#e4e4e7` border, `#09090b` text.
+- WCAG AA compliant contrast.
+
+4. CONTROLS:
+- Language toggle + Theme toggle with smooth 120-160ms transitions.
+- Anti-FOUC head hydration script. Persist state in localStorage.
