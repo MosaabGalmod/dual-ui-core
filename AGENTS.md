@@ -49,3 +49,11 @@ When implementing, refactoring, or generating web pages and UI components, you m
 - **Language Toggle**: Accessible button showing current and target language, instant DOM text hydration via `data-i18n` without full-page reloads, persisted in `localStorage`.
 - **Theme Toggle**: Accessible button with clear Sun/Moon iconography, smooth 120-160ms transition, persisted in `localStorage` and synchronized with `prefers-color-scheme`.
 - **Anti-FOUC Head Script**: Include an inline script in `<head>` to read `localStorage` and set `dir`, `lang`, and theme attributes before visual paint.
+
+---
+
+### 5. Form UX, Instant Real-Time Validation & Custom Date Control
+- **Zero Native Alerts**: Prohibit blocking `window.alert()`, `window.confirm()`, and default browser validation tooltips. Use accessible, non-blocking toast notifications and `novalidate` forms.
+- **Banned Native Date Input in Arabic RTL**: Browser default `<input type="date">` is strictly prohibited in Arabic RTL interfaces due to OS locale inversion and forced Indic numerals. Must be replaced with Custom Segmented Date Control (`DD / MM / YYYY` right-to-left) with Western digits `0-9`, auto-advance focus, interactive calendar picker `📅`, and hidden ISO `YYYY-MM-DD` sync field.
+- **Accessible Real-Time Feedback**: Wire `:user-valid` / `:user-invalid` styling with `aria-describedby` and `aria-invalid="true"`.
+

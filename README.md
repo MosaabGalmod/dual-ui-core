@@ -43,6 +43,8 @@
 - **Accessible Error Anchoring**: Every input connects directly to its underlying error container via `aria-describedby` and `aria-invalid="true"`.
 - **Bilingual Validation Catalogs**: 100% of error messages are fetched from `locales/ar.json` and `locales/en.json` (Zero Text Leakage).
 - **Custom Accessible Toasts**: Non-blocking, theme-aware notifications with ARIA live regions and logical direction positioning.
+- **Custom Segmented Date Control**: Complete elimination of browser default `<input type="date">` in Arabic RTL interfaces, replaced with a segmented three-part date input (`DD / MM / YYYY` right-to-left), Western digits `0-9`, auto-advance focus, interactive calendar picker `📅`, and real-time hidden ISO `YYYY-MM-DD` sync.
+
 
 ---
 
