@@ -9,7 +9,7 @@
 
 ---
 
-## The Three Core Pillars (الركائز الهندسية الثلاث)
+## The Four Core Pillars (الركائز الهندسية الأربع)
 
 ### 1. Zero Text Leakage (العزل اللغوي التام)
 - Dictionaries are strictly separated (`locales/ar.json` and `locales/en.json`).
@@ -28,11 +28,21 @@
 
 ### 3. Multi-Screen Responsiveness (التجاوب الكامل مع كافة الشاشات)
 - **Mobile-First Foundation**: Base styles for small screens (`320px–639px`) first, then progressively layered via standard breakpoints (`sm: 640px`, `md: 768px`, `lg: 1024px`, `xl: 1280px`).
+- **Container Queries (`@container`)**: Isolate card and component responsiveness from global viewport widths.
+- **Fluid CSS Grid**: Auto-fit layouts `grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr))` preventing media query bloat.
 - **Touch-Ergonomic Targets**: Minimum 44x44px clickable target on mobile for all buttons, links, and icon toggles (WCAG 2.5.5 / Apple HIG).
 - **BiDi Adaptive Navigation Drawer**: On screens `< 768px`, desktop navigation collapses into a slide-out drawer that slides in from `inset-inline-start` (from the right in Arabic RTL, from the left in English LTR).
 - **Fluid Typography**: Uses `clamp()` for headline typography to prevent awkward line breaks on narrow phone screens.
-- **Zero Horizontal Overflow**: Prohibits horizontal window scroll (`overflow-x: clip`), with responsive horizontal scroll wrappers for data tables and matrices.
+- **Adaptive Tables & Zero Horizontal Overflow**: Prohibits horizontal window scroll (`overflow-x: clip`), with card transformation or horizontal scroll containers for data tables.
 - **Safe Area Insets**: Accommodates mobile notches and gesture navigation swipe bars using `env(safe-area-inset-*)`.
+
+### 4. Form UX & Instant Real-Time Validation (التحقق الفوري والتنبيهات المخصصة)
+- **Zero Native Alerts**: Complete elimination of blocking `window.alert()`, `window.confirm()`, and unstyled browser default `required` tooltip balloons.
+- **Mandatory `novalidate`**: Forms enforce programmatic control with instant inline field feedback on `blur` and live correction on `input`.
+- **CSS-Native Selectors**: Utilizes `:user-valid` and `:user-invalid` preventing premature error styling.
+- **Accessible Error Anchoring**: Every input connects directly to its underlying error container via `aria-describedby` and `aria-invalid="true"`.
+- **Bilingual Validation Catalogs**: 100% of error messages are fetched from `locales/ar.json` and `locales/en.json` (Zero Text Leakage).
+- **Custom Accessible Toasts**: Non-blocking, theme-aware notifications with ARIA live regions and logical direction positioning.
 
 ---
 

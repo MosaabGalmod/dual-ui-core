@@ -1,16 +1,17 @@
 ---
 name: dual-ui-core
-description: Strict engineering standard for zero-leakage bilingual interfaces (Arabic RTL & English LTR), complete dual-theme support (Dark & Light modes), and robust multi-screen responsiveness (mobile-first, touch-ergonomic, fluid scaling). Trigger whenever building, styling, or reviewing any responsive web interface, page, or UI component.
+description: Strict engineering standard for zero-leakage bilingual interfaces (Arabic RTL & English LTR), complete dual-theme support (Dark & Light modes), multi-screen responsiveness (mobile-first, container queries, fluid scaling), and accessible real-time form validation with custom notifications (zero native alerts). Trigger whenever building, styling, or reviewing any responsive web interface, form, page, or UI component.
 ---
 
 # Dual-UI Core: Bilingual (AR/EN), Dual-Theme (Dark/Light) & Responsive Engineering Standard
 
-You are an expert production frontend engineer. This standard defines non-negotiable architectural constraints for web interfaces supporting **Bilingual Localization (Arabic RTL / English LTR)**, **Dual Theme (Dark / Light)**, and **Multi-Screen Responsiveness (Mobile-First)**.
+You are an expert production frontend engineer. This standard defines non-negotiable architectural constraints for web interfaces supporting **Bilingual Localization (Arabic RTL / English LTR)**, **Dual Theme (Dark / Light)**, **Multi-Screen Responsiveness (Mobile-First)**, and **Instant Real-Time Form Validation (Zero Native Alerts)**.
 
-When implementing or modifying any user interface, you must satisfy three fundamental pillars:
+When implementing or modifying any user interface, you must satisfy four fundamental pillars:
 1. **Zero Text Leakage**: Arabic and English must be completely isolated. Neither language may leak into the other's view, markup, or layout.
 2. **First-Class Dual Theme**: Both Dark and Light themes must be first-class citizens built on semantic CSS tokens with WCAG AA compliance, zero visual flicker (FOUC), and tactile toggle controls.
-3. **Multi-Screen Responsiveness**: Mobile-first architecture, fluid scaling, ergonomic touch targets (≥44px), bidirectional-aware navigation drawers, and zero horizontal overflow.
+3. **Multi-Screen Responsiveness**: Mobile-first architecture, fluid scaling, container queries, ergonomic touch targets (≥44px), bidirectional-aware navigation drawers, and zero horizontal overflow.
+4. **Accessible Form UX & Instant Validation**: Real-time inline field validation (`novalidate`, `:user-valid`/`:user-invalid`, `aria-describedby`), strictly localized error messages, and custom non-blocking toast notifications replacing native `window.alert()` and browser default balloons.
 
 ---
 
@@ -161,11 +162,152 @@ Build base styles for mobile viewports (`320px–639px`) first, then layer deskt
   padding-inline-end: env(safe-area-inset-right);
   ```
 
+### 3.7 Container Queries (`@container`) for Component Adaptability
+- Decouple component responsiveness from full-viewport widths. Card grids and self-contained widgets must define container contexts:
+  ```css
+  .card-container {
+    container-type: inline-size;
+    container-name: card;
+  }
+
+  @container card (min-width: 400px) {
+    .card-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+  ```
+
+### 3.8 Fluid CSS Grid & Auto-Fit Layout Patterns
+- Eliminate brittle media-query chaining for grids. Use fluid auto-fit patterns that respond naturally to available width across phones, tablets, and desktops:
+  ```css
+  .responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 1.5rem;
+  }
+  ```
+
+### 3.9 Adaptive Complex Data & Responsive Tables
+- Complex tables must adapt gracefully without breaking layouts:
+  1. **Scroll Mode**: Clean horizontal scroll container with sticky logical start columns (`position: sticky; inset-inline-start: 0`).
+  2. **Card Transformation Mode (Mobile-First)**: On `< 640px`, switch `display: block` on `<tr>` and render `td::before` with `attr(data-label)` to transform table rows into standalone accessible cards.
+
 ---
 
-## 4. Interactive Toggle Controls & Anti-FOUC State
+## 4. Form UX, Instant Real-Time Validation & Custom Notifications (Zero Native Alerts)
 
-### 4.1 Anti-FOUC Hydration Script (Zero Visual Glitch)
+### 4.1 Absolute Ban on Native Alerts & Popups
+- **Strictly Banned**: `window.alert()`, `window.confirm()`, and `window.prompt()` are strictly forbidden. They halt the JavaScript execution thread, violate accessible UI standards, lack theme styling, and break bidirectional continuity.
+- **Banned Native Validation Balloons**: Native browser tooltip bubbles triggered by standard `required` attributes are forbidden. They produce ugly, unstyled popups that default to the operating system/browser language, leaking English or unstyled text into Arabic interfaces.
+- **Mandatory `novalidate`**: Every `<form>` element must specify `novalidate` to disable browser default validation bubbles, taking full programmatic control over validation and error display:
+  ```html
+  <form id="contactForm" novalidate onsubmit="handleFormSubmit(event)">
+  ```
+
+### 4.2 Instant Real-Time Inline Validation Architecture
+- Provide immediate, polite validation feedback as the user interacts:
+  - **On Touch / Blur**: Validate field when focus leaves the input (`blur` event).
+  - **Live Correction**: Once a field is marked invalid, validate on every `input` keystroke so the error disappears immediately when corrected.
+  - **Modern CSS Selectors**: Leverage `:user-valid` and `:user-invalid` (or class-based state `.is-invalid` / `.is-valid`) so validation styling triggers only after user interaction, preventing premature red borders on virgin fields:
+  ```css
+  .form-input:user-invalid,
+  .form-input.has-error {
+    border-color: var(--text-error, #ef4444);
+    box-shadow: 0 0 0 1px var(--text-error, #ef4444);
+  }
+
+  .form-input:user-valid:not(:placeholder-shown) {
+    border-color: var(--border-strong);
+  }
+  ```
+
+### 4.3 Accessible Error Anchoring & ARIA Associations
+- Every input field must associate directly with its error message container:
+  - Input includes `aria-invalid="false"` initially, switching to `true` upon validation failure.
+  - Error element is placed directly below the field with a deterministic ID: `id="{fieldId}-error"`.
+  - Input references the error ID via `aria-describedby="{fieldId}-error"`.
+  - Error container uses `role="alert"` and `aria-live="polite"` so screen readers announce failures without jarring interruptions.
+  ```html
+  <div class="form-field space-y-1">
+    <label for="userEmail" class="block text-sm font-medium text-[var(--text-primary)]">
+      <span data-i18n="form.email_label">Email Address</span>
+      <span class="text-red-500" aria-hidden="true">*</span>
+    </label>
+    
+    <input type="email" 
+           id="userEmail" 
+           name="email" 
+           required 
+           aria-required="true"
+           aria-invalid="false"
+           aria-describedby="userEmail-error"
+           class="form-input w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-app)] text-[var(--text-primary)] text-sm focus:outline-none focus:border-[var(--focus-ring)] transition-colors min-h-[44px]">
+    
+    <p id="userEmail-error" 
+       role="alert" 
+       aria-live="polite" 
+       class="hidden text-xs text-red-500 text-start mt-1 font-medium"></p>
+  </div>
+  ```
+
+### 4.4 Bilingual Error Catalogs (Strict Zero Text Leakage)
+- Hardcoded validation strings in JavaScript are prohibited. Validation messages must reside in language catalogs:
+  ```json
+  // locales/ar.json
+  {
+    "validation": {
+      "required": "هذا الحقل مطلوب، يُرجى إدخال القيمة.",
+      "email_invalid": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+      "min_length": "يجب ألا يقل هذا الحقل عن {min} أحرف.",
+      "form_error_summary": "يرجى تصحيح الأخطاء الموضحة أدناه قبل الإرسال."
+    }
+  }
+  ```
+  ```json
+  // locales/en.json
+  {
+    "validation": {
+      "required": "This field is required. Please provide a value.",
+      "email_invalid": "Please enter a valid email address.",
+      "min_length": "This field must be at least {min} characters.",
+      "form_error_summary": "Please correct the highlighted errors before submitting."
+    }
+  }
+  ```
+
+### 4.5 Production-Ready Custom Toast & Alert Notification Component
+- Non-blocking, accessible notifications replacing native `alert()`:
+  - Positioned logically using `inset-inline-end: 1.25rem` and `inset-block-start: 1.25rem`.
+  - Accessible announcement via `role="status"` and `aria-live="polite"`.
+  - Supports types: `success`, `error`, `warning`, `info` with semantic icons and theme tokens.
+  - Auto-dismiss after 4000ms with manual close button and pause on hover:
+  ```javascript
+  function showToast(messageKey, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const message = t(messageKey) || messageKey;
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type} flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg transition-all duration-200`;
+    toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    toast.innerHTML = `
+      <span class="toast-message text-sm font-medium flex-1">${message}</span>
+      <button onclick="this.parentElement.remove()" class="p-1 hover:opacity-70" aria-label="Close">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 200); }, 4000);
+  }
+  ```
+
+---
+
+## 5. Interactive Toggle Controls & Anti-FOUC State
+
+### 5.1 Anti-FOUC Hydration Script (Zero Visual Glitch)
 To eliminate Flash of Unstyled Content (FOUC) or Flash of Wrong Language upon page refresh, insert this tiny, synchronous script into the document `<head>` **before** any stylesheet or body tag:
 
 ```html
@@ -190,7 +332,7 @@ To eliminate Flash of Unstyled Content (FOUC) or Flash of Wrong Language upon pa
 </script>
 ```
 
-### 4.2 Accessible Language Toggle Button
+### 5.2 Accessible Language Toggle Button
 ```html
 <button id="langToggleBtn" 
         onclick="toggleLanguage()"
@@ -203,7 +345,7 @@ To eliminate Flash of Unstyled Content (FOUC) or Flash of Wrong Language upon pa
 </button>
 ```
 
-### 4.3 Accessible Theme Toggle Button
+### 5.3 Accessible Theme Toggle Button
 ```html
 <button id="themeToggleBtn"
         onclick="toggleTheme()"
@@ -221,7 +363,7 @@ To eliminate Flash of Unstyled Content (FOUC) or Flash of Wrong Language upon pa
 
 ---
 
-## 5. Pre-Delivery Quality Checklist (12 Verification Checks)
+## 6. Pre-Delivery Quality Checklist (16 Verification Checks)
 
 Before concluding any UI delivery or component refactoring, verify every item:
 
@@ -239,3 +381,7 @@ Before concluding any UI delivery or component refactoring, verify every item:
 | 10 | Is the layout 100% responsive across mobile (`320px+`), tablet, and desktop viewports? | YES |
 | 11 | Do all touch targets on mobile meet the minimum 44x44px ergonomic threshold? | YES |
 | 12 | Does the mobile navigation drawer slide in from the correct logical direction (RTL vs LTR)? | YES |
+| 13 | Are `window.alert()`, `confirm()`, and default browser validation popups completely eliminated? | YES |
+| 14 | Do all forms enforce `novalidate` with instant inline field validation and `aria-describedby`? | YES |
+| 15 | Are form validation messages 100% localized in `locales/ar.json` and `locales/en.json`? | YES |
+| 16 | Are responsive container queries (`@container`) or fluid auto-fit grids used for modular layout? | YES |

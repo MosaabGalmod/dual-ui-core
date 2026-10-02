@@ -33,12 +33,15 @@ You are building a production web interface. The following rules are non-negotia
 
 ---
 
-### 3. Multi-Screen Responsive Architecture (Mobile-First)
+### 3. Multi-Screen Responsive Architecture (Mobile-First & Modern Patterns)
 - **Mobile-First Breakpoints**: Base styles for small screens (`320px–639px`) first, then layer enhancements at `sm: 640px`, `md: 768px`, `lg: 1024px`, `xl: 1280px`.
+- **Container Queries (`@container`)**: Isolate card and component responsiveness from global viewport widths so components adapt modularly.
+- **Fluid CSS Grid Patterns**: Employ `grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr))` to avoid media query bloat.
 - **Ergonomic Touch Targets**: Minimum 44x44px tappable target on mobile for all buttons, links, and toggles.
 - **BiDi Mobile Drawer Navigation**: Collapse navigation links on `< 768px` into an accessible drawer that slides in from `inset-inline-start` (right in Arabic, left in English).
 - **Fluid Typography**: Use `clamp()` for headline typography to prevent awkward line breaks on mobile screens.
-- **Zero Horizontal Overflow**: Prevent horizontal page wobble (`overflow-x: clip`), and wrap wide tables in responsive scroll containers.
+- **Adaptive Data Tables**: Wrap tables in horizontal scroll containers with sticky start columns, or transform rows into cards (`data-label`) on mobile.
+- **Zero Horizontal Overflow**: Prevent horizontal page wobble (`overflow-x: clip`).
 - **Safe Area Insets**: Accommodate device notches and bottom bars using `env(safe-area-inset-*)`.
 
 ---
@@ -47,3 +50,12 @@ You are building a production web interface. The following rules are non-negotia
 - **Language Toggle**: Accessible button showing current and target language, instant DOM text hydration without full-page reloads, persisted in `localStorage`.
 - **Theme Toggle**: Accessible button with clear Sun/Moon iconography, smooth 120-160ms transition, persisted in `localStorage` and synchronized with `prefers-color-scheme`.
 - **Anti-FOUC Head Script**: Include an inline script in `<head>` to read `localStorage` and set `dir`, `lang`, and theme attributes before visual paint.
+
+---
+
+### 5. Form UX, Instant Real-Time Validation & Custom Notifications (Zero Native Alerts)
+- **Banned Native Blocking Alerts**: `window.alert()`, `window.confirm()`, and `window.prompt()` are strictly forbidden. Use non-blocking, accessible toast notifications with auto-dismiss and ARIA live regions.
+- **Banned Native Required Popups**: Browser default tooltip balloons on `required` inputs are forbidden. Forms must include `novalidate`.
+- **Instant Inline Validation**: Provide immediate feedback on `blur` and live correction on `input`, using `:user-valid` / `:user-invalid` or state classes to avoid premature error styling.
+- **Accessible Error Anchoring**: Every error resides directly beneath the input, connected via `aria-describedby="{id}-error"` and `aria-invalid="true"`.
+- **Bilingual Error Catalogs**: Zero hardcoded error strings in JS. All validation messages must be fetched from `locales/ar.json` and `locales/en.json` (Zero Text Leakage).
