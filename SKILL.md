@@ -303,6 +303,159 @@ Build base styles for mobile viewports (`320px–639px`) first, then layer deskt
   }
   ```
 
+### 4.6 Custom Segmented Date Control (Mandatory for Arabic/RTL Interfaces)
+- The native browser `<input type="date">` is **banned** in any Arabic (`dir="rtl"`) interface (see `arabic-bidi-engineering`, Section 3). Browsers on Windows with `ar-SA` locale force reversed field order and Arabic-Indic digits that cannot be corrected via CSS.
+- **Replacement**: A custom three-segment date input with explicit RTL visual ordering, Western digits `(0-9)`, auto-advance focus, integrated calendar popup, and hidden ISO synchronization field.
+
+#### 4.6.1 Visual Order (RTL — Right to Left)
+| Position | Segment | Width | Placeholder | Label Badge |
+|---|---|---|---|---|
+| Far Right | Day `DD` | 2 chars | `DD` | `يوم` / `Day` |
+| Center | Month `MM` | 2 chars | `MM` | `شهر` / `Month` |
+| Far Left | Year `YYYY` | 4 chars | `YYYY` | `سنة` / `Year` |
+
+Segments are separated by a visual `/` divider. A calendar button `📅` is placed at the inline-end (far left in RTL).
+
+#### 4.6.2 Reference HTML Markup
+```html
+<div class="custom-date-wrapper flex items-center gap-1 border border-[var(--border-strong)] rounded-lg bg-[var(--bg-app)] px-3 py-2 min-h-[44px]"
+     dir="ltr">
+  <!-- Force LTR inside the control so segments stay DD / MM / YYYY visually left-to-right,
+       while the outer form remains RTL. The label and field-group order in the form handles RTL placement. -->
+
+  <div class="segment-group flex items-center gap-1">
+    <!-- Day -->
+    <div class="flex flex-col items-center">
+      <input type="text" id="dateDay" inputmode="numeric" maxlength="2" placeholder="DD"
+             aria-label="Day" autocomplete="off"
+             class="w-8 text-center text-sm font-mono bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)]">
+      <span class="text-[10px] text-[var(--text-muted)] leading-none mt-0.5" data-i18n="date.day_label">يوم</span>
+    </div>
+
+    <span class="text-[var(--text-muted)] text-sm select-none">/</span>
+
+    <!-- Month -->
+    <div class="flex flex-col items-center">
+      <input type="text" id="dateMonth" inputmode="numeric" maxlength="2" placeholder="MM"
+             aria-label="Month" autocomplete="off"
+             class="w-8 text-center text-sm font-mono bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)]">
+      <span class="text-[10px] text-[var(--text-muted)] leading-none mt-0.5" data-i18n="date.month_label">شهر</span>
+    </div>
+
+    <span class="text-[var(--text-muted)] text-sm select-none">/</span>
+
+    <!-- Year -->
+    <div class="flex flex-col items-center">
+      <input type="text" id="dateYear" inputmode="numeric" maxlength="4" placeholder="YYYY"
+             aria-label="Year" autocomplete="off"
+             class="w-12 text-center text-sm font-mono bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)]">
+      <span class="text-[10px] text-[var(--text-muted)] leading-none mt-0.5" data-i18n="date.year_label">سنة</span>
+    </div>
+  </div>
+
+  <!-- Calendar Popup Trigger -->
+  <button type="button" id="dateCalendarBtn" aria-label="Open calendar"
+          class="p-1 ms-1 text-[var(--accent)] hover:text-[var(--text-primary)] transition-colors">
+    📅
+  </button>
+
+  <!-- Hidden native date input for calendar popup & form submission (ISO YYYY-MM-DD) -->
+  <input type="date" id="dateHidden" class="sr-only" tabindex="-1" aria-hidden="true">
+  <input type="hidden" id="dateISO" name="date_value">
+</div>
+```
+
+#### 4.6.3 JavaScript Behavior Specification
+```javascript
+function initSegmentedDate(dayId, monthId, yearId, hiddenISOId, calendarBtnId, hiddenDateId) {
+  const day = document.getElementById(dayId);
+  const month = document.getElementById(monthId);
+  const year = document.getElementById(yearId);
+  const iso = document.getElementById(hiddenISOId);
+  const calBtn = document.getElementById(calendarBtnId);
+  const hiddenDate = document.getElementById(hiddenDateId);
+  const segments = [day, month, year];
+
+  // Allow only digits
+  segments.forEach(seg => {
+    seg.addEventListener('input', () => {
+      seg.value = seg.value.replace(/\D/g, '');
+    });
+  });
+
+  // Auto-advance: day→month after 2 digits, month→year after 2 digits
+  day.addEventListener('input', () => {
+    if (day.value.length === 2) month.focus();
+    syncISO();
+  });
+  month.addEventListener('input', () => {
+    if (month.value.length === 2) year.focus();
+    syncISO();
+  });
+  year.addEventListener('input', () => syncISO());
+
+  // Backspace retreat: empty month→day, empty year→month
+  month.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && month.value === '') { e.preventDefault(); day.focus(); }
+  });
+  year.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && year.value === '') { e.preventDefault(); month.focus(); }
+  });
+
+  // Calendar popup: open hidden native picker, reflect selection
+  calBtn.addEventListener('click', () => hiddenDate.showPicker());
+  hiddenDate.addEventListener('change', () => {
+    if (!hiddenDate.value) return;
+    const [y, m, d] = hiddenDate.value.split('-');
+    day.value = d;
+    month.value = m;
+    year.value = y;
+    syncISO();
+  });
+
+  function syncISO() {
+    const d = day.value.padStart(2, '0');
+    const m = month.value.padStart(2, '0');
+    const y = year.value.padStart(4, '0');
+    iso.value = (y !== '0000' && m !== '00' && d !== '00') ? `${y}-${m}-${d}` : '';
+  }
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  initSegmentedDate('dateDay', 'dateMonth', 'dateYear', 'dateISO', 'dateCalendarBtn', 'dateHidden');
+});
+```
+
+#### 4.6.4 Bilingual Date Labels (Zero Text Leakage)
+Add to language catalogs:
+```json
+// locales/ar.json
+{
+  "date": {
+    "day_label": "يوم",
+    "month_label": "شهر",
+    "year_label": "سنة",
+    "open_calendar": "فتح التقويم",
+    "date_required": "يرجى إدخال التاريخ كاملاً.",
+    "date_invalid": "التاريخ المُدخل غير صالح."
+  }
+}
+```
+```json
+// locales/en.json
+{
+  "date": {
+    "day_label": "Day",
+    "month_label": "Month",
+    "year_label": "Year",
+    "open_calendar": "Open calendar",
+    "date_required": "Please enter a complete date.",
+    "date_invalid": "The entered date is not valid."
+  }
+}
+```
+
 ---
 
 ## 5. Interactive Toggle Controls & Anti-FOUC State
@@ -385,3 +538,4 @@ Before concluding any UI delivery or component refactoring, verify every item:
 | 14 | Do all forms enforce `novalidate` with instant inline field validation and `aria-describedby`? | YES |
 | 15 | Are form validation messages 100% localized in `locales/ar.json` and `locales/en.json`? | YES |
 | 16 | Are responsive container queries (`@container`) or fluid auto-fit grids used for modular layout? | YES |
+| 17 | Are all date inputs replaced with Custom Segmented Date Controls (no native `<input type="date">` in RTL)? | YES |
