@@ -18,6 +18,7 @@ When implementing, refactoring, or generating web pages and UI components, you m
   - In English: use English punctuation `,` `;` `?` and `""`.
   - Western digits `0-9` for technical metrics and version tags across both languages.
 - **CSS Logical Properties**: Always use `margin-inline-start`, `padding-inline-end`, `text-align: start`. Physical `left`/`right` properties for layout structure are prohibited.
+- **Normative Arabic/RTL Reference**: The 15-point Arabic/RTL web UI rules and the Flip Test in the `arabic-bidi-engineering` skill (Section 5) are normative for every Arabic interface built under this standard (logical properties, directional-icon mirroring, direction-aware motion, number and Latin isolation, font separation, directional effects).
 - **Font Stack Dynamic Adaptation**:
   - Arabic: Authentic Arabic typeface (`Cairo` / `Tajawal` / `IBM Plex Sans Arabic`).
   - English: Clean Latin typeface (`Inter` / `system-ui` / `Geist`).
@@ -32,6 +33,7 @@ When implementing, refactoring, or generating web pages and UI components, you m
   - Light: Background `#ffffff`, Cards `#f4f4f5`, Borders `#e4e4e7`, Text `#09090b`.
 - **WCAG AA Compliance**: Ensure a minimum contrast ratio of 4.5:1 for standard body text and 3:1 for large text/interactive borders across both themes.
 - **No Heavy Glowing Blobs**: Adhere to Anti-AI Slop principles—avoid radial decorative blurred blobs in both themes.
+- **Colour Distribution Across Themes (60-30-10)**: Semantic roles per theme: neutral surfaces (~60%), brand with on-brand (~30%), accent with on-accent (~10%), plus text, border and status tokens. Both themes keep the same proportions; dark mode re-derives tokens (not an inversion). Accent is a fill with dark text for primary CTAs. Multi-product suites override brand hue ramp on `[data-product="name"]` while sharing neutrals and components.
 
 ---
 
