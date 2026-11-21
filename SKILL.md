@@ -62,6 +62,9 @@ Never use physical directional properties (`left` and `right`) for structural la
 | `text-align: left` / `right` | `text-align: start` / `end` |
 | `border-left` / `border-right` | `border-inline-start` / `border-inline-end` |
 
+The 15-point Arabic/RTL web UI rules and the Flip Test in the `arabic-bidi-engineering` skill (Section 5) are normative for every Arabic interface built under this standard.
+- Logical properties, directional-icon mirroring, direction-aware motion, number and Latin isolation, font separation and directional effects must all be satisfied.
+
 ---
 
 ## 2. Dual-Theme Architecture (Dark & Light Modes)
@@ -109,6 +112,10 @@ Define design tokens at the root level using CSS variables. Never hardcode arbit
 - **Large Headlines & Borders**: Maintain minimum 3:1 contrast ratio.
 - **No Pure Black (#000) or Harsh White (#FFF) Clashing**: Soften dark backgrounds to deep zinc/slate (`#09090b`) to eliminate eye fatigue.
 - **No Decorative Glowing Blobs**: Respect the Anti-AI Slop constraint—no radial colored gradient blooms in either theme.
+
+### 2.3 Colour distribution across themes (60-30-10)
+Semantic roles, per theme: `--color-bg` and neutral surfaces (about 60%), `--color-brand` with `--color-on-brand` (about 30%), `--color-accent` with `--color-on-accent` (about 10%), plus text, border and semantic status tokens. Both themes keep the same roles and proportions; dark mode re-derives each token (it is not an inversion). Every foreground/background pair meets WCAG AA (4.5:1 for text, 3:1 for UI boundaries). The accent is a fill with dark text and is reserved for primary calls to action.
+Multi-product suites: product theming is done only by overriding the brand hue ramp (and optionally the accent) on `[data-product="name"]`; neutrals, semantic colours and components are shared. Unify the suite under one brand by default. Adding a new product must require data only (a new `data-product` value and its metadata), never component changes.
 
 ---
 
