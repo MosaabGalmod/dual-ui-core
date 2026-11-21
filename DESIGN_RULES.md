@@ -16,7 +16,6 @@ You are building a production web interface. The following rules are non-negotia
   - In English: use English punctuation `,` `;` `?` and `""`.
   - Western digits `0-9` for technical metrics and version tags across both languages.
 - **CSS Logical Properties**: Always use `margin-inline-start`, `padding-inline-end`, `text-align: start`. Physical `left`/`right` properties for layout structure are prohibited.
-- **Normative Arabic/RTL Reference**: The 15-point Arabic/RTL web UI rules and the Flip Test in the `arabic-bidi-engineering` skill (Section 5) are normative for every Arabic interface built under this standard (logical properties, directional-icon mirroring, direction-aware motion, number and Latin isolation, font separation, directional effects).
 - **Font Stack Dynamic Adaptation**:
   - Arabic: Authentic Arabic typeface (`Cairo` / `Tajawal` / `IBM Plex Sans Arabic`).
   - English: Clean Latin typeface (`Inter` / `system-ui` / `Geist`).

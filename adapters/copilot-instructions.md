@@ -6,7 +6,6 @@ When generating or refactoring bilingual (Arabic/English), themed (Dark/Light), 
    - Store all UI strings in `ar` and `en` dictionaries. Never write raw text into HTML or JSX.
    - Use CSS Logical Properties (`margin-inline-start`, `text-align: start`).
    - Isolate Latin tokens in Arabic with `<bdi>`.
-   - Follow 15-point Arabic/RTL rules and Flip Test in `arabic-bidi-engineering` (Section 5) as normative.
 
 2. **Dual-Theme Tokens**:
    - Use CSS variables for surface, text, and border colors.

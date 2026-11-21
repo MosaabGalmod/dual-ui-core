@@ -62,8 +62,6 @@ Never use physical directional properties (`left` and `right`) for structural la
 | `text-align: left` / `right` | `text-align: start` / `end` |
 | `border-left` / `border-right` | `border-inline-start` / `border-inline-end` |
 
-The 15-point Arabic/RTL web UI rules and the Flip Test in the `arabic-bidi-engineering` skill (Section 5) are normative for every Arabic interface built under this standard.
-- Logical properties, directional-icon mirroring, direction-aware motion, number and Latin isolation, font separation and directional effects must all be satisfied.
 
 ---
 
